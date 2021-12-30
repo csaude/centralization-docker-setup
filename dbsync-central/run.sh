@@ -6,7 +6,7 @@ apk add bash
 
 ./init_eip.sh
 
-cp -a openmrs-eip/distribution/receiver/routes /user/local/dbsync/routes
+cp -a $shared_dir/openmrs-eip/distribution/receiver/routes .
 
 echo Starting DB sync Receiver...
 
