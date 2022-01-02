@@ -11,3 +11,6 @@ cp -a $shared_dir/openmrs-eip/distribution/receiver/routes .
 echo Starting DB sync Receiver...
 
 java -jar -Dspring.profiles.active=receiver openmrs-eip-app.jar
+
+#TMP CODE BELLOW
+#crond -f -l 8

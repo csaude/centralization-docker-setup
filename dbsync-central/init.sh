@@ -7,6 +7,12 @@ apk add git
 apk add maven
 
 
+#RETRIEVE EXISTING BUILD
+if test -f "$shared_dir/openmrs-eip/app/target/openmrs-eip-app-1.0-SNAPSHOT.jar"; then
+	cp $shared_dir/openmrs-eip/app/target/openmrs-eip-app-1.0-SNAPSHOT.jar $home_dir/openmrs-eip-app.jar
+fi
+
+
 if test ! -f "$home_dir/openmrs-eip-app.jar"; then
 	if test ! -d "$shared_dir/openmrs-eip"; then
 		cd $shared_dir

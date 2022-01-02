@@ -64,7 +64,7 @@ services:
       - ./opencr/custom/app.js:/src/server/lib/app.js
       - ./opencr/custom/fhir.js:/src/server/lib/routes/fhir.js
       - ./opencr/run.sh:/src/server/run.sh
-      - ./opencr/admin.OCRUser.json:/src/resources/ResourcesData/admin.OCRUser.json
+      - ./opencr/admin.OCRUser.prod.json:/src/resources/ResourcesData/admin.OCRUser.json
     entrypoint: [ "sh", "run.sh" ]
     restart: unless-stopped
 
@@ -79,7 +79,7 @@ services:
     volumes:
       - ./openmrs-central/my.cnf:/etc/mysql/my.cnf
       - ./openmrs-central/config.sql:/docker-entrypoint-initdb.d/openmrs_config_central.sql
-      - openmrsDbData:/opt/fgh/data
+      - openmrsDbData:/var/lib/mysql
     restart: unless-stopped
 
   openmrs-central:
@@ -87,8 +87,6 @@ services:
     container_name: openmrs-central
     depends_on:
       - mysql-central
-      - artemis
-      - opencr
     volumes:
       - ./openmrs-central/setenv.sh:/usr/local/tomcat/bin/setenv.sh
       - ./openmrs-central/run.sh:/user/local/tomcat/bin/run_openmrs.sh
@@ -100,7 +98,6 @@ services:
       - ./openmrs-central/modules/debezium-1.0.0-SNAPSHOT.omod:/root/.OpenMRS/modules/debezium.omod
       - ./openmrs-central/modules/mpi-1.0.0-SNAPSHOT.omod:/root/.OpenMRS/modules/mpi.omod
     ports:
-            #- "8080:8080"
       - "8080:8080"
     entrypoint: [ "sh", "/user/local/tomcat/bin/run_openmrs.sh" ]
     restart: unless-stopped
@@ -133,11 +130,12 @@ services:
       - "8081:8081"
     volumes:
       - ./dbsync-central/application.properties:/home/eip/application.properties
-      - ./dbsync-central/users.properties:/home/eip/dbsync-users.properties
+      - ./dbsync-central/users.prod.properties:/home/eip/dbsync-users.properties
       - ./dbsync-central/init.sh:/home/eip/init_eip.sh
       - ./dbsync-central/run.sh:/home/eip/run.sh
       - ./dbsync-central/logback-spring.xml:/home/eip/logback-spring.xml
-      - dbSyncData:/home/eip/shared
+      - ./shared:/home/eip/shared
+        #- dbSyncData:/home/eip/shared
       - dbsyncM2Store:/root/.m2
     working_dir: /home/eip
     entrypoint: [ "sh", "run.sh" ]
@@ -151,8 +149,6 @@ volumes:
     driver: local
   openmrsDbData:
     external: true 
-    #openmrsDbData:
-    #driver: local
   dbSyncData:
     driver: local
   artemisData:
