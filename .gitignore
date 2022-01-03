@@ -3,3 +3,4 @@ dbsync-central/users.prod.properties
 artemis/artemis-users-production.properties
 shared/*
 opencr/admin.OCRUser.prod.json
+opencr/config_production.json
