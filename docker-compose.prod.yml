@@ -78,7 +78,7 @@ services:
       - "3307:3306"
     volumes:
       - ./openmrs-central/my.cnf:/etc/mysql/my.cnf
-      - ./openmrs-central/config.sql:/docker-entrypoint-initdb.d/openmrs_config_central.sql
+      #- ./openmrs-central/config.sql:/docker-entrypoint-initdb.d/openmrs_config_central.sql
       - openmrsDbData:/var/lib/mysql
     restart: unless-stopped
 
@@ -89,7 +89,9 @@ services:
       - mysql-central
     volumes:
       - ./openmrs-central/setenv.sh:/usr/local/tomcat/bin/setenv.sh
-      - ./openmrs-central/run.sh:/user/local/tomcat/bin/run_openmrs.sh
+      - ./openmrs-central/run.sh:/usr/local/tomcat/bin/run_openmrs.sh
+      - ./openmrs-central/init.sh:/usr/local/tomcat/bin/init.sh
+      - ./openmrs-central/install_opencr_cert.exp:/usr/local/tomcat/bin/install_opencr_cert.exp
       - ./openmrs-central/openmrs-runtime.properties:/root/.OpenMRS/openmrs-runtime.properties
       - ./openmrs-central/openmrs.p12:/root/.OpenMRS/mpi/config/openmrs.p12
       - ./openmrs-common/modules/legacyui-1.8.2.omod:/root/.OpenMRS/modules/legacyui.omod
@@ -97,9 +99,11 @@ services:
       - ./openmrs-common/modules/webservices.rest-2.30.0.omod:/root/.OpenMRS/modules/webservices.rest.omod
       - ./openmrs-central/modules/debezium-1.0.0-SNAPSHOT.omod:/root/.OpenMRS/modules/debezium.omod
       - ./openmrs-central/modules/mpi-1.0.0-SNAPSHOT.omod:/root/.OpenMRS/modules/mpi.omod
+      - ./shared/openmrs/tomcat/webapps:/usr/local/tomcat/webapps/  
+      - ./shared/debezium:/root/.OpenMRS/config/debezium
     ports:
       - "8080:8080"
-    entrypoint: [ "sh", "/user/local/tomcat/bin/run_openmrs.sh" ]
+    entrypoint: [ "sh", "/usr/local/tomcat/bin/run_openmrs.sh" ]
     restart: unless-stopped
 
   artemis:

@@ -1,3 +1,7 @@
+USE openmrs_fgh_central;
+
+DELETE FROM global_property WHERE property in('debezium.engine.enabled', 'debezium.mysql.history.file.filename', 'debezium.offset.storage.file.filename', 'debezium.database.user', 'debezium.database.password', 'mpi.server.base.url', 'mpi.keystore.path', 'mpi.keystore.password', 'mpi.keystore.type' );
+
 INSERT INTO global_property (property,property_value,uuid)
 VALUES ('debezium.engine.enabled', 'true', 'ace8f66d-98b8-4829-a5af-d063376cd5c1'),
        ('debezium.mysql.history.file.filename', '/root/.OpenMRS/config/debezium/history.txt', 'bce8f66d-98b8-4829-a5af-d063376cd5c1'),
