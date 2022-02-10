@@ -1,0 +1,161 @@
+version: "3.3"
+
+services:
+
+  mysql-opencr:
+    image: mysql:5.7.34
+    container_name: mysql-opencr
+    env_file:
+      - ./opencr/db.env
+    ports:
+      - "3309:3306"
+    volumes:
+      - ./opencr/my.cnf:/etc/mysql/my.cnf
+      - opencrDbData:/var/lib/mysql
+    restart: unless-stopped
+
+  hapi-fhir:
+    image: hapiproject/hapi:v5.4.1
+    container_name: hapi-fhir
+    depends_on:
+      - mysql-opencr
+    ports:
+      - "8181:8080"
+    environment:
+      spring.config.location: 'file:///user/share/hapi-fhir/application.yaml'
+    volumes:
+      - ./opencr/application.yaml:/user/share/hapi-fhir/application.yaml
+    restart: unless-stopped
+
+  es:
+    image: intrahealth/elasticsearch:latest
+    container_name: es
+    environment:
+      - node.name=es01
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esData:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    restart: unless-stopped
+
+  opencr:
+    container_name: opencr
+    image: intrahealth/opencr
+    ports:
+      - "53000:3000"
+    depends_on:
+      - hapi-fhir
+      - es
+    environment:
+      - NODE_ENV=production
+      - HAPI_FHIR_URL=http://hapi-fhir:8080/fhir/metadata
+    volumes:
+      - $docker_containers_shared_dir/conf/opencr/config_production.json:/src/server/config/config_production.json
+      - $docker_containers_shared_dir/conf/opencr/admin.OCRUser.json:/src/resources/ResourcesData/admin.OCRUser.json
+      - ./opencr/decisionRules.json:/src/server/config/decisionRules.json
+      - ./opencr/PatientRelationship.json:/src/resources/Relationships/PatientRelationship.json
+      - ./opencr/custom/app.js:/src/server/lib/app.js
+      - ./opencr/custom/fhir.js:/src/server/lib/routes/fhir.js
+      - ./opencr/run.sh:/src/server/run.sh
+      - /etc/localtime:/etc/localtime
+    entrypoint: [ "sh", "run.sh" ]
+    restart: unless-stopped
+
+  mysql-central:
+    image: mysql:5.6
+    container_name: mysql-central
+    command: /home/scripts/init.sh
+    env_file:
+      - $docker_containers_shared_dir/conf/openmrs/central/db.env
+    ports:
+      - "53307:3306"
+    volumes:
+      - ./openmrs-central/prod.my.cnf:/etc/mysql/my.cnf
+      - ./openmrs-central/db/scripts:/home/scripts
+      - ./openmrs-central/db/crons:/home/crons
+      - ./openmrs-central/db/scripts/init.sh:/docker-entrypoint-initdb.d/init.sh
+      - $docker_containers_shared_dir/bkps/db:/home/shared/bkps/db
+      - openmrsDbData:/var/lib/mysql
+      - /etc/localtime:/etc/localtime
+    restart: unless-stopped
+
+  openmrs-central:
+    image: tomcat:7.0.109-jdk8-openjdk-slim
+    container_name: openmrs-central
+    depends_on:
+      - mysql-central
+    volumes:
+      - ./openmrs-central/setenv.sh:/usr/local/tomcat/bin/setenv.sh
+      - ./openmrs-central/run.prod.sh:/usr/local/tomcat/bin/run_openmrs.sh
+      - ./openmrs-central/init.prod.sh:/usr/local/tomcat/bin/init.sh
+      - ./openmrs-central/install_opencr_cert.exp:/usr/local/tomcat/bin/install_opencr_cert.exp
+      - /etc/localtime:/etc/localtime
+      - $docker_containers_shared_dir/conf/openmrs/central/openmrs-runtime.properties:/usr/local/tomcat/openmrs-runtime.properties
+      - $docker_containers_shared_dir/conf/openmrs/central/openmrs.p12:/usr/local/tomcat/.OpenMRS/mpi/config/openmrs.p12
+      - $docker_containers_shared_dir/openmrs/tomcat/webapps:/usr/local/tomcat/webapps/  
+      - $docker_containers_shared_dir/debezium:/usr/local/tomcat/.OpenMRS/config/debezium
+      - ./openmrs-common/modules/legacyui-1.8.2.omod:/usr/local/tomcat/.OpenMRS/modules/legacyui.omod
+      - ./openmrs-common/modules/owa-1.12.0.omod:/usr/local/tomcat/.OpenMRS/modules/owa.omod
+      - ./openmrs-common/modules/webservices.rest-2.30.0.omod:/usr/local/tomcat/.OpenMRS/modules/webservices.rest.omod
+      - ./openmrs-central/modules/debezium-1.0.0-SNAPSHOT.omod:/usr/local/tomcat/.OpenMRS/modules/debezium.omod
+      - ./openmrs-central/modules/mpi-1.0.0-SNAPSHOT.omod:/usr/local/tomcat/.OpenMRS/modules/mpi.omod
+    ports:
+      - "58080:8080"
+    entrypoint: [ "sh", "/usr/local/tomcat/bin/run_openmrs.sh" ]
+    restart: unless-stopped
+
+  artemis:
+    image: cnocorch/activemq-artemis
+    container_name: artemis
+    ports:
+      - "51616:61616"
+      - "58161:8161"
+    volumes:
+      - $docker_containers_shared_dir/conf/artemis/artemis-roles.properties:/var/lib/artemis/etc/artemis-roles.properties
+      - $docker_containers_shared_dir/conf/artemis/artemis-users.properties:/var/lib/artemis/etc/artemis-users.properties
+      - artemisData:/var/lib/artemis
+      - /etc/localtime:/etc/localtime
+    restart: unless-stopped
+
+  dbsync-central:
+    image: adoptopenjdk/openjdk8:alpine-slim
+    container_name: dbsync-central
+    env_file:
+      - $docker_containers_shared_dir/conf/eip/dbsync.env   
+    environment:
+      - home_dir=/home/eip
+      - shared_dir=/home/eip/shared
+    depends_on:
+      - mysql-central
+      - openmrs-central
+      - artemis
+    ports:
+      - "58081:8081"
+    volumes:
+      - $docker_containers_shared_dir/conf/eip/dbsync-users.properties:/home/eip/dbsync-users.properties
+      - $docker_containers_shared_dir:/home/eip/shared
+      - ./dbsync-central/run.prod.sh:/home/eip/run.sh
+      - ./dbsync-central/init.prod.sh:/home/eip/init.sh
+      - ./:/home/centralization-docker-setup/:ro
+      - /etc/localtime:/etc/localtime
+    working_dir: /home/eip
+    entrypoint: [ "sh", "run.sh" ]
+    restart: unless-stopped
+
+
+volumes:
+  opencrDbData:
+    driver: local
+  esData:
+    driver: local
+  openmrsDbData:
+    external: true 
+  artemisData:
+    driver: local
