@@ -106,6 +106,7 @@ under the License.
       <acceptor name="hornetq">tcp://0.0.0.0:5445?anycastPrefix=jms.queue.;multicastPrefix=jms.topic.;protocols=HORNETQ,STOMP;useEpoll=true</acceptor>
       <!-- MQTT Acceptor -->
       <acceptor name="mqtt">tcp://0.0.0.0:1883?tcpSendBufferSize=1048576;tcpReceiveBufferSize=1048576;protocols=MQTT;useEpoll=true</acceptor>
+      <acceptor name="netty-ssl-acceptor">tcp://0.0.0.0:61617?sslEnabled=true;keyStorePath=${data.dir}/../etc/broker.ks;keyStorePassword=password;needClientAuth=true</acceptor>
     </acceptors>
     <security-settings>
       <security-setting match="#">
