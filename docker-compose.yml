@@ -68,7 +68,7 @@ services:
   # ===== End OpenCR ======
 
   mysql-central-dev:
-    image: mysql:5.6
+    image: mysql:5.6.51
     container_name: mysql-central-dev
     env_file:
       - ./openmrs-common/db.env
@@ -84,7 +84,7 @@ services:
       - /etc/localtime:/etc/localtime
 
   mysql-remote-dev:
-    image: mysql:5.6
+    image: mysql:5.6.51
     container_name: mysql-remote-dev
     env_file:
       - ./openmrs-common/db.env
@@ -110,9 +110,7 @@ services:
       - ./openmrs-common/run.sh:/user/local/tomcat/bin/run_openmrs.sh
       - ./openmrs-central/openmrs-runtime.properties:/root/.OpenMRS/openmrs-runtime.properties
       - ./openmrs-central/openmrs.p12:/root/.OpenMRS/mpi/config/openmrs.p12
-      - ./openmrs-common/modules/legacyui-1.8.2.omod:/root/.OpenMRS/modules/legacyui.omod
-      - ./openmrs-common/modules/owa-1.12.0.omod:/root/.OpenMRS/modules/owa.omod
-      - ./openmrs-common/modules/webservices.rest-2.30.0.omod:/root/.OpenMRS/modules/webservices.rest.omod
+      - ./openmrs-common/modules:/root/.OpenMRS/modules
       - ./openmrs-central/modules/debezium-1.0.0-SNAPSHOT.omod:/root/.OpenMRS/modules/debezium.omod
       - ./openmrs-central/modules/mpi-1.0.0-SNAPSHOT.omod:/root/.OpenMRS/modules/mpi.omod
       - /etc/localtime:/etc/localtime
@@ -128,9 +126,7 @@ services:
       - artemis-dev
     volumes:
       - ./openmrs-common/run.sh:/user/local/tomcat/bin/run_openmrs.sh
-      - ./openmrs-common/modules/legacyui-1.8.2.omod:/root/.OpenMRS/modules/legacyui.omod
-      - ./openmrs-common/modules/owa-1.12.0.omod:/root/.OpenMRS/modules/owa.omod
-      - ./openmrs-common/modules/webservices.rest-2.30.0.omod:/root/.OpenMRS/modules/webservices.rest.omod
+      - ./openmrs-common/modules:/root/.OpenMRS/modules
       - ./openmrs-remote/openmrs-runtime.properties:/root/.OpenMRS/openmrs-runtime.properties
       - /etc/localtime:/etc/localtime
     ports:
