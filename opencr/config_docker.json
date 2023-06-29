@@ -23,7 +23,7 @@
     "password": "hapi"
   },
   "elastic": {
-    "server": "http://es:9200",
+    "server": "http://es-dev:9200",
     "username": "",
     "password": "",
     "max_compilations_rate": "10000/1m",
@@ -70,7 +70,7 @@
     }
   },
   "sync": {
-    "lastFHIR2ESSync": "2021-11-27T01:47:05"
+    "lastFHIR2ESSync": "2023-06-29T10:23:20"
   },
   "__comments": {
     "matching.tool": "this tells if the app should use mediator algorithms or elasticsearch algorithms for matching, two options mediator and elasticsearch"

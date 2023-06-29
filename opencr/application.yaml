@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: 'jdbc:mysql://mysql-opencr:3306/opencr'
+    url: 'jdbc:mysql://mysql-opencr-dev:3306/opencr'
     username: opencr
     password: opencr
     driverClassName: com.mysql.jdbc.Driver

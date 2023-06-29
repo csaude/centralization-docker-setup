@@ -10,4 +10,6 @@ CREATE TABLE `site_info` (
      UNIQUE KEY `site_info_name_uk` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO site_info (name, identifier, date_created) VALUES ('Remote 1', 'Remote-1', now());
+INSERT INTO site_info (name, identifier, date_created)
+VALUES ('Site 1', 'Site-1', now()),
+       ('Site 2', 'Site-2', now());

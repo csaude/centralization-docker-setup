@@ -3,36 +3,40 @@ version: "3.3"
 services:
 
   # ===== Start OpenCR ======
-  mysql-opencr:
+  mysql-opencr-dev:
     image: mysql:5.7.34
-    container_name: mysql-opencr
+    container_name: mysql-opencr-dev
     env_file:
       - ./opencr/db.env
     ports:
       - "3309:3306"
     volumes:
       - ./opencr/my.cnf:/etc/mysql/my.cnf
+      - /etc/localtime:/etc/localtime
 
-  hapi-fhir:
+  hapi-fhir-dev:
     image: hapiproject/hapi:v5.4.1
-    container_name: hapi-fhir
+    container_name: hapi-fhir-dev
     depends_on:
-      - mysql-opencr
+      - mysql-opencr-dev
     ports:
       - "8085:8080"
     environment:
       spring.config.location: 'file:///user/share/hapi-fhir/application.yaml'
     volumes:
       - ./opencr/application.yaml:/user/share/hapi-fhir/application.yaml
+      - /etc/localtime:/etc/localtime
 
-  es:
+  es-dev:
     image: intrahealth/elasticsearch:latest
-    container_name: es
+    container_name: es-dev
     environment:
       - node.name=es01
       - discovery.type=single-node
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - /etc/localtime:/etc/localtime
     ulimits:
       memlock:
         soft: -1
@@ -40,17 +44,17 @@ services:
     ports:
       - 9200:9200
 
-  opencr:
-    container_name: opencr
+  opencr-dev:
+    container_name: opencr-dev
     image: intrahealth/opencr
     ports:
       - "3000:3000"
     depends_on:
-      - hapi-fhir
-      - es
-    restart: always
+      - hapi-fhir-dev
+      - es-dev
+    #restart: always
     environment:
-      - HAPI_FHIR_URL=http://hapi-fhir:8080/fhir/metadata
+      - HAPI_FHIR_URL=http://hapi-fhir-dev:8080/fhir/metadata
     volumes:
       - ./opencr/config_docker.json:/src/server/config/config_docker.json
       - ./opencr/decisionRules.json:/src/server/config/decisionRules.json
@@ -58,13 +62,14 @@ services:
       - ./opencr/custom/app.js:/src/server/lib/app.js
       - ./opencr/custom/fhir.js:/src/server/lib/routes/fhir.js
       - ./opencr/run.sh:/src/server/run.sh
+      - /etc/localtime:/etc/localtime
     entrypoint: [ "sh", "run.sh" ]
 
   # ===== End OpenCR ======
 
-  mysql-central:
+  mysql-central-dev:
     image: mysql:5.6
-    container_name: mysql-central
+    container_name: mysql-central-dev
     env_file:
       - ./openmrs-common/db.env
     ports:
@@ -76,10 +81,11 @@ services:
       - ./openmrs-central/config.sql:/docker-entrypoint-initdb.d/openmrs_config_central.sql
       - ./dbsync-common/mgt_db.sql:/docker-entrypoint-initdb.d/mgt_db.sql
       - ./dbsync-central/mgt_db_config.sql:/docker-entrypoint-initdb.d/mgt_db_config.sql
+      - /etc/localtime:/etc/localtime
 
-  mysql-remote:
+  mysql-remote-dev:
     image: mysql:5.6
-    container_name: mysql-remote
+    container_name: mysql-remote-dev
     env_file:
       - ./openmrs-common/db.env
     ports:
@@ -90,14 +96,15 @@ services:
       - ./openmrs-common/config.sql:/docker-entrypoint-initdb.d/openmrs_config.sql
       - ./openmrs-remote/config.sql:/docker-entrypoint-initdb.d/openmrs_config_remote.sql
       - ./dbsync-common/mgt_db.sql:/docker-entrypoint-initdb.d/mgt_db.sql
+      - /etc/localtime:/etc/localtime
 
-  openmrs-central:
+  openmrs-central-dev:
     image: tomcat:7.0.109-jdk8-openjdk-slim
-    container_name: openmrs-central
+    container_name: openmrs-central-dev
     depends_on:
-      - mysql-central
-      - artemis
-      - opencr
+      - mysql-central-dev
+      - artemis-dev
+      - opencr-dev
     volumes:
       - ./openmrs-central/setenv.sh:/usr/local/tomcat/bin/setenv.sh
       - ./openmrs-common/run.sh:/user/local/tomcat/bin/run_openmrs.sh
@@ -108,68 +115,71 @@ services:
       - ./openmrs-common/modules/webservices.rest-2.30.0.omod:/root/.OpenMRS/modules/webservices.rest.omod
       - ./openmrs-central/modules/debezium-1.0.0-SNAPSHOT.omod:/root/.OpenMRS/modules/debezium.omod
       - ./openmrs-central/modules/mpi-1.0.0-SNAPSHOT.omod:/root/.OpenMRS/modules/mpi.omod
+      - /etc/localtime:/etc/localtime
     ports:
       - "8081:8080"
     entrypoint: [ "sh", "/user/local/tomcat/bin/run_openmrs.sh" ]
 
-  openmrs-remote:
+  openmrs-remote-dev:
     image: tomcat:7.0.109-jdk8-openjdk-slim
-    container_name: openmrs-remote
-    environment:
-      TZ: "America/Chicago"
+    container_name: openmrs-remote-dev
     depends_on:
-      - mysql-remote
-      - artemis
+      - mysql-remote-dev
+      - artemis-dev
     volumes:
       - ./openmrs-common/run.sh:/user/local/tomcat/bin/run_openmrs.sh
       - ./openmrs-common/modules/legacyui-1.8.2.omod:/root/.OpenMRS/modules/legacyui.omod
       - ./openmrs-common/modules/owa-1.12.0.omod:/root/.OpenMRS/modules/owa.omod
       - ./openmrs-common/modules/webservices.rest-2.30.0.omod:/root/.OpenMRS/modules/webservices.rest.omod
       - ./openmrs-remote/openmrs-runtime.properties:/root/.OpenMRS/openmrs-runtime.properties
+      - /etc/localtime:/etc/localtime
     ports:
       - "8082:8080"
     entrypoint: [ "sh", "/user/local/tomcat/bin/run_openmrs.sh" ]
 
 # ===== Start DB sync ======
-  artemis:
+  artemis-dev:
     image: cnocorch/activemq-artemis
-    container_name: artemis
+    container_name: artemis-dev
     ports:
       - "61616:61616"
       - "8161:8161"
     volumes:
       - ./artemis/artemis-roles.properties:/var/lib/artemis/etc/artemis-roles.properties
       - ./artemis/artemis-users.properties:/var/lib/artemis/etc/artemis-users.properties
+      - /etc/localtime:/etc/localtime
 
-  dbsync-central:
-    image: adoptopenjdk/openjdk8:alpine-slim
-    container_name: dbsync-central
-    depends_on:
-      - mysql-central
-      - openmrs-central
-      - artemis
-    ports:
-      - "8083:8081"
-    volumes:
-      - ./dbsync-central/application.properties:/user/local/dbsync/application.properties
-      - ./dbsync-central/users.properties:/user/local/dbsync/dbsync-users.properties
-      - ./dbsync-common/init.sh:/user/local/dbsync/init_eip.sh
-      - ./dbsync-central/run.sh:/user/local/dbsync/run.sh
-    working_dir: /user/local/dbsync
-    entrypoint: [ "sh", "run.sh" ]
-
-  dbsync-remote:
-    image: adoptopenjdk/openjdk8:alpine-slim
-    container_name: dbsync-remote
-    depends_on:
-      - mysql-remote
-      - artemis
-    ports:
-      - "8084:8081"
-    volumes:
-      - ./dbsync-remote/application.properties:/user/local/dbsync/application.properties
-      - ./dbsync-remote/users.properties:/user/local/dbsync/dbsync-users.properties
-      - ./dbsync-common/init.sh:/user/local/dbsync/init_eip.sh
-      - ./dbsync-remote/run.sh:/user/local/dbsync/run.sh
-    working_dir: /user/local/dbsync
-    entrypoint: [ "sh", "run.sh" ]
+#  dbsync-central-dev:
+#    image: adoptopenjdk/openjdk8:alpine-slim
+#    container_name: dbsync-central-dev
+#    depends_on:
+#      - mysql-central-dev
+#      - openmrs-central-dev
+#      - artemis-dev
+#    ports:
+#      - "8083:8081"
+#    volumes:
+#      - ./dbsync-central/application.properties:/user/local/dbsync/application.properties
+#      - ./dbsync-central/users.properties:/user/local/dbsync/dbsync-users.properties
+#      - ./dbsync-common/init.sh:/user/local/dbsync/init_eip.sh
+#      - ./dbsync-central/run.sh:/user/local/dbsync/run.sh
+#      - /etc/localtime:/etc/localtime
+#    working_dir: /user/local/dbsync
+#    entrypoint: [ "sh", "run.sh" ]
+#
+#  dbsync-remote-dev:
+#    image: adoptopenjdk/openjdk8:alpine-slim
+#    container_name: dbsync-remote-dev
+#    depends_on:
+#      - mysql-remote-dev
+#      - artemis-dev
+#    ports:
+#      - "8084:8081"
+#    volumes:
+#      - ./dbsync-remote/application.properties:/user/local/dbsync/application.properties
+#      - ./dbsync-remote/users.properties:/user/local/dbsync/dbsync-users.properties
+#      - ./dbsync-common/init.sh:/user/local/dbsync/init_eip.sh
+#      - ./dbsync-remote/run.sh:/user/local/dbsync/run.sh
+#      - /etc/localtime:/etc/localtime
+#    working_dir: /user/local/dbsync
+#    entrypoint: [ "sh", "run.sh" ]
