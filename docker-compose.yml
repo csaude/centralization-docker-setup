@@ -115,7 +115,7 @@ services:
       - opencr-dev
     volumes:
       - ./opencr/server_cert.pem:/usr/local/tomcat/server_cert.pem
-      - ./openmrs-central/setenv.sh:/usr/local/tomcat/bin/setenv.sh
+      - ./openmrs-common/setenv.sh:/usr/local/tomcat/bin/setenv.sh
       - ./openmrs-common/run.sh:/user/local/tomcat/bin/run_openmrs.sh
       - ./openmrs-central/openmrs-runtime.properties:/root/.OpenMRS/openmrs-runtime.properties
       - ./openmrs-central/openmrs.p12:/root/.OpenMRS/mpi/config/openmrs.p12
@@ -135,9 +135,12 @@ services:
       - mysql-remote-dev
       - artemis-dev
     volumes:
+      - ./opencr/server_cert.pem:/usr/local/tomcat/server_cert.pem
+      - ./openmrs-common/setenv.sh:/usr/local/tomcat/bin/setenv.sh
       - ./openmrs-common/run.sh:/user/local/tomcat/bin/run_openmrs.sh
       - ./openmrs-common/modules:/root/.OpenMRS/modules
       - ./openmrs-remote/openmrs-runtime.properties:/root/.OpenMRS/openmrs-runtime.properties
+      - ./openmrs-remote/modules/esaudefeatures-1.1.0-SNAPSHOT.416229.omod:/root/.OpenMRS/modules/esaudefeatures.omod
       - /etc/timezone:/etc/timezone
       - /etc/localtime:/etc/localtime
     ports:

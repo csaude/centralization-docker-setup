@@ -1,3 +1,8 @@
-UPDATE users SET uuid = 'b59b8633-d5f2-4af5-b6b6-bb2a4be832b1' WHERE user_id = 1;
-UPDATE person SET uuid = 'f730a566-3e8d-4cd6-aa8b-2583c3fbe1e4', creator = 1 WHERE person_id = 1;
-UPDATE person_name SET uuid = 'c57c5353-e7b1-41bc-904a-a9b649ee3de8' WHERE person_name_id = 1;
+UPDATE global_property SET property_value = 'esaudefeatures.opencr.remote.server.url' WHERE property = 'https://opencr-dev:3000';
+UPDATE global_property SET property_value = 'esaudefeatures.opencr.remote.server.username' WHERE property = 'root@intrahealth.org';
+UPDATE global_property SET property_value = 'esaudefeatures.opencr.remote.server.password' WHERE property = 'intrahealth';
+UPDATE global_property SET property_value = 'esaudefeatures.openmrs.remote.server.url' WHERE property = 'http://openmrs-central-dev:8080/openmrs';
+UPDATE global_property SET property_value = 'esaudefeatures.openmrs.remote.server.username' WHERE property = 'admin';
+UPDATE global_property SET property_value = 'esaudefeatures.openmrs.remote.server.password' WHERE property = 'Admin123';
+UPDATE global_property SET property_value = 'esaudefeatures.remote.server.skip.hostname.verification' WHERE property = 'TRUE';
+UPDATE global_property SET property_value = 'esaudefeatures.remote.server.type' WHERE property = 'OPENCR';
