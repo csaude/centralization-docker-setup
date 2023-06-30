@@ -4,9 +4,7 @@ apk update
 apk upgrade
 apk add bash
 
-./init_eip.sh
-
-cp -a openmrs-eip/distribution/receiver/routes /user/local/dbsync/routes
+./init_eip.sh receiver
 
 echo Starting DB sync Receiver...
 

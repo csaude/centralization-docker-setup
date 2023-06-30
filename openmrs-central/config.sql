@@ -19,4 +19,4 @@ VALUES ('debezium.engine.enabled', 'true', 'ace8f66d-98b8-4829-a5af-d063376cd5c1
        ('mpi.patient.uuid.system.uri', 'http://test.id.com/uuid', '3ce8f66d-98b8-4829-a5af-d063376cd5c1'),
        ('mpi.identifier.type.system.uri.mappings', '15a3fd64-1d5f-11e0-b929-000c29ad1d08^http://test.id.com/nid,8d79403a-c2cc-11de-8d13-0010c6dffd0f^http://test.id.com/openmrs-old-id', '4ce8f66d-98b8-4829-a5af-d063376cd5c1');
 
-UPDATE global_property SET property_value = 'org.openmrs.api:info,org.openmrs.module.debezium:debug,org.openmrs.module.fgh.mpi:debug,io.debezium:info' WHERE property = 'log.level';
+UPDATE global_property SET property_value = 'org.openmrs.api:info,org.openmrs.module.debezium:info,org.openmrs.module.fgh.mpi:info,io.debezium:info' WHERE property = 'log.level';

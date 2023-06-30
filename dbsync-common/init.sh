@@ -8,8 +8,18 @@ apk add bash
 apk add git
 apk add maven
 
-if test ! -f "openmrs-eip-app.jar"; then
+if test ! -d "openmrs-eip"; then
   git clone https://github.com/FriendsInGlobalHealth/openmrs-eip.git
+  cd openmrs-eip
+  git checkout $DB_SYNC_VERSION
+  cd ..
+fi
+
+if test ! -d "routes"; then
+  cp -a openmrs-eip/distribution/$1/routes /usr/local/dbsync/routes
+fi
+
+if test ! -f "openmrs-eip-app.jar"; then
   cd openmrs-eip
   git checkout $DB_SYNC_VERSION
   mvn clean install -DskipTests
