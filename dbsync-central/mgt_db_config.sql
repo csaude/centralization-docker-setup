@@ -1,4 +1,4 @@
-USE openmrs_eip_mgt;
+USE openmrs_dbsync;
 
 CREATE TABLE `site_info` (
      `id` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -11,5 +11,5 @@ CREATE TABLE `site_info` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO site_info (name, identifier, date_created)
-VALUES ('Site 1', 'Site-1', now()),
-       ('Site 2', 'Site-2', now());
+VALUES ('Site A', 'Site-A', now()),
+       ('Site B', 'Site-B', now());
