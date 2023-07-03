@@ -90,9 +90,9 @@ services:
       - /etc/timezone:/etc/timezone
       - /etc/localtime:/etc/localtime
 
-  mysql-remote-dev:
+  mysql-siteA-dev:
     image: mysql:5.6.51
-    container_name: mysql-remote-dev
+    container_name: mysql-siteA-dev
     env_file:
       - ./openmrs-common/db.env
     ports:
@@ -128,11 +128,11 @@ services:
       - "8081:8080"
     entrypoint: [ "sh", "/user/local/tomcat/bin/run_openmrs.sh" ]
 
-  openmrs-remote-dev:
+  openmrs-siteA-dev:
     image: tomcat:7.0.109-jdk8-openjdk-slim
-    container_name: openmrs-remote-dev
+    container_name: openmrs-siteA-dev
     depends_on:
-      - mysql-remote-dev
+      - mysql-siteA-dev
       - artemis-dev
     volumes:
       - ./opencr/server_cert.pem:/usr/local/tomcat/server_cert.pem
@@ -173,9 +173,9 @@ services:
       - /etc/timezone:/etc/timezone
       - /etc/localtime:/etc/localtime
 
-  mysql-remote-dbsync-dev:
+  mysql-siteA-dbsync-dev:
     image: mysql:5.6.51
-    container_name: mysql-remote-dbsync-dev
+    container_name: mysql-siteA-dbsync-dev
     env_file:
       - ./openmrs-common/db.env
     ports:
@@ -204,11 +204,11 @@ services:
     working_dir: /usr/local/dbsync
     entrypoint: [ "sh", "run.sh" ]
 
-  dbsync-remote-dev:
+  dbsync-siteA-dev:
     image: adoptopenjdk/openjdk8:alpine-slim
-    container_name: dbsync-remote-dev
+    container_name: dbsync-siteA-dev
     depends_on:
-      - mysql-remote-dbsync-dev
+      - mysql-siteA-dbsync-dev
       - artemis-dev
     ports:
       - "8084:8081"
