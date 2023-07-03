@@ -5,6 +5,9 @@ CREATE TABLE `site_info` (
      `name` varchar(255) NOT NULL,
      `identifier` varchar(255) NOT NULL,
      `date_created` datetime NOT NULL,
+     `site_district` varchar(255) NOT NULL,
+     `site_instance_name` varchar(255) NOT NULL,
+     `sync_disabled` bit(1) NOT NULL DEFAULT 0,
      PRIMARY KEY (`id`),
      UNIQUE KEY `site_info_identifier_uk` (`identifier`),
      UNIQUE KEY `site_info_name_uk` (`name`)
