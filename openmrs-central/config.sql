@@ -15,7 +15,7 @@ VALUES ('debezium.engine.enabled', 'true', 'ace8f66d-98b8-4829-a5af-d063376cd5c1
        ('mpi.person.uuid.url', 'http://openmrs.org/fhir/StructureDefinition/person-uuid', '9be8f66d-98b8-4829-a5af-d063376cd5c1'),
        ('mpi.relationship.type.terminology.system.uri', 'http://relationship.type.concept', '0ce8f66d-98b8-4829-a5af-d063376cd5c1'),
        ('mpi.identifier.type.terminology.system.uri', 'http://identifier.type.concept', '1ce8f66d-98b8-4829-a5af-d063376cd5c1'),
-       ('mpi.identifier.type.concept.mappings', '15a3fd64-1d5f-11e0-b929-000c29ad1d08:ND:The NID', '2ce8f66d-98b8-4829-a5af-d063376cd5c1'),
+       ('mpi.identifier.type.concept.mappings', '15a3fd64-1d5f-11e0-b929-000c29ad1d08:ND:The NID,8d79403a-c2cc-11de-8d13-0010c6dffd0f:OpenMRS_ID,OpenMRS ID', '2ce8f66d-98b8-4829-a5af-d063376cd5c1'),
        ('mpi.patient.uuid.system.uri', 'http://test.id.com/uuid', '3ce8f66d-98b8-4829-a5af-d063376cd5c1'),
        ('mpi.identifier.type.system.uri.mappings', '15a3fd64-1d5f-11e0-b929-000c29ad1d08^http://test.id.com/nid,8d79403a-c2cc-11de-8d13-0010c6dffd0f^http://test.id.com/openmrs-old-id', '4ce8f66d-98b8-4829-a5af-d063376cd5c1');
 
