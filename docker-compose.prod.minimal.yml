@@ -48,7 +48,7 @@ services:
     restart: unless-stopped
     
   openmrs-central:
-    image: tomcat:tomcat:9.0.87-jre11-temurin-jammy
+    image: tomcat:9.0.87-jre11-temurin-jammy
     container_name: openmrs-central
     depends_on:
       - mysql-openmrs-central
