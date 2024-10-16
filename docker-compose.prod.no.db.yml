@@ -61,7 +61,7 @@ services:
     container_name: dbsync-central
     extra_hosts:
       - mysql-openmrs-central:$openmrs_db_host
-      - mysql-dbsync-central:$dbsync_db_host	
+      - mysql-dbsync-central:$dbsync_db_host
     env_file:
       - $docker_containers_shared_dir/conf/eip/dbsync.env   
     environment:
