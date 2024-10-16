@@ -1,32 +1,6 @@
 version: "3.3"
 
 services:
-  mysql-openmrs-central:
-    image: mysql:5.6
-    container_name: mysql-openmrs-central
-    env_file:
-      - $docker_containers_shared_dir/conf/openmrs/central/db.env
-    ports:
-      - "$port_mysql_openmrs_central:3306"
-    volumes:
-      - ./mysql-openmrs-central/prod.my.cnf:/etc/mysql/my.cnf
-      - $docker_containers_shared_dir/conf/openmrs/central/db/certificates/server/:/home/ssl/     
-      - openmrsDbData:/var/lib/mysql
-      - /etc/localtime:/etc/localtime
-    restart: unless-stopped
-  mysql-dbsync-central:
-    image: mysql:5.6
-    container_name: mysql-dbsync-central
-    env_file:
-      - $docker_containers_shared_dir/conf/eip/mgt-db.env
-    ports:
-      - "$port_mysql_dbsync_central:3306"
-    volumes:
-      - ./mysql-dbsync-central/prod.my.cnf:/etc/mysql/my.cnf
-      - dbSyncCentralDbData:/var/lib/mysql
-      - /etc/localtime:/etc/localtime
-    restart: unless-stopped
-
   artemis:
     image: cnocorch/activemq-artemis
     container_name: artemis
@@ -50,8 +24,10 @@ services:
   openmrs-central:
     image: tomcat:8.5.87-jdk8
     container_name: openmrs-central
+    extra_hosts:
+      - mysql-openmrs-central:$openmrs_db_host
+      - mysql-dbsync-central:$dbsync_db_host
     depends_on:
-      - mysql-openmrs-central
       - artemis
     volumes:
       - ./openmrs-central/setenv.sh:/usr/local/tomcat/bin/setenv.sh
@@ -65,7 +41,8 @@ services:
       - ./openmrs-common/modules/legacyui-1.8.2.omod:/usr/local/tomcat/.OpenMRS/modules/legacyui.omod
       - ./openmrs-common/modules/owa-1.12.0.omod:/usr/local/tomcat/.OpenMRS/modules/owa.omod
       - ./openmrs-common/modules/webservices.rest-2.36.0.omod:/usr/local/tomcat/.OpenMRS/modules/webservices.rest.omod
-      - ./openmrs-common/modules/eptsreports.omod:/usr/local/tomcat/.OpenMRS/modules/eptsreports.omod
+      - ./openmrs-common/modules/eptsreports-3.18.0.omod:/usr/local/tomcat/.OpenMRS/modules/eptsreports.omod
+      - ./openmrs-common/modules/clinicalsummary-1.0-RELEASE.omod:/usr/local/tomcat/.OpenMRS/modules/eptsreports.omod
       - ./openmrs-common/modules/serialization.xstream-0.2.14.omod:/usr/local/tomcat/.OpenMRS/modules/serialization.xstream.omod
       - ./openmrs-common/modules/calculation-1.2.1.omod:/usr/local/tomcat/.OpenMRS/modules/calculation.omod
       - ./openmrs-common/modules/htmlwidgets-1.10.0.omod:/usr/local/tomcat/.OpenMRS/modules/htmlwidgets.omod
@@ -82,13 +59,15 @@ services:
   dbsync-central:
     image: openjdk:17-alpine
     container_name: dbsync-central
+    extra_hosts:
+      - mysql-openmrs-central:$openmrs_db_host
+      - mysql-dbsync-central:$dbsync_db_host	
     env_file:
       - $docker_containers_shared_dir/conf/eip/dbsync.env   
     environment:
       - home_dir=/home/eip
       - shared_dir=/home/eip/shared
     depends_on:
-      - mysql-dbsync-central
       - openmrs-central
       - artemis
     ports:
