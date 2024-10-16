@@ -1,74 +1,6 @@
 version: "3.3"
 
 services:
-
-  mysql-opencr:
-    image: mysql:5.7.34
-    container_name: mysql-opencr
-    env_file:
-      -  $docker_containers_shared_dir/conf/opencr/db.env
-    ports:
-      - "$port_mysql_opencr:3306"
-    volumes:
-      - ./mysql-opencr/prod.my.cnf:/etc/mysql/my.cnf
-      - opencrDbData:/var/lib/mysql
-    restart: unless-stopped
-
-  hapi-fhir:
-    image: hapiproject/hapi:v5.4.1
-    container_name: hapi-fhir
-    depends_on:
-      - mysql-opencr
-    ports:
-      - "$port_hapi_fhir:8080"
-    environment:
-      spring.config.location: 'file:///user/share/hapi-fhir/application.yaml'
-    volumes:
-      - $docker_containers_shared_dir/conf/opencr/application.yaml:/user/share/hapi-fhir/application.yaml
-    restart: unless-stopped
-
-  es:
-    image: intrahealth/elasticsearch:latest
-    container_name: es
-    environment:
-      - node.name=es01
-      - discovery.type=single-node
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    volumes:
-      - esData:/usr/share/elasticsearch/data
-    ports:
-      - "$port_es:9200"
-    restart: unless-stopped
-
-  opencr:
-    container_name: opencr
-    image: intrahealth/opencr:beac58a
-    ports:
-      - "$port_opencr:3000"
-    depends_on:
-      - hapi-fhir
-      - es
-    environment:
-      - NODE_ENV=production
-      - HAPI_FHIR_URL=http://hapi-fhir:8080/fhir/metadata
-    volumes:
-      - $docker_containers_shared_dir/conf/opencr/config_production.json:/src/server/config/config_production.json
-      - $docker_containers_shared_dir/conf/opencr/admin.OCRUser.json:/src/resources/ResourcesData/admin.OCRUser.json
-      - $docker_containers_shared_dir/conf/opencr/certificates/server:/src/server/serverCertificates/
-      - ./opencr/decisionRules_production.json:/src/server/config/decisionRules.json
-      - ./opencr/PatientRelationship_production.json:/src/resources/Relationships/PatientRelationship.json
-      - ./opencr/custom/app.js:/src/server/lib/app.js
-      - ./opencr/custom/fhir.js:/src/server/lib/routes/fhir.js
-      - ./opencr/run.sh:/src/server/run.sh
-      - /etc/localtime:/etc/localtime
-    entrypoint: [ "sh", "run.sh" ]
-    restart: unless-stopped
-
   mysql-openmrs-central:
     image: mysql:5.6
     container_name: mysql-openmrs-central
@@ -116,7 +48,7 @@ services:
     restart: unless-stopped
     
   openmrs-central:
-    image: tomcat:8.5.87-jdk8
+    image: tomcat:9.0.87-jre11-temurin-jammy
     container_name: openmrs-central
     depends_on:
       - mysql-openmrs-central
@@ -130,18 +62,19 @@ services:
       - $docker_containers_shared_dir/openmrs/tomcat/webapps:/usr/local/tomcat/webapps/  
       - $docker_containers_shared_dir/openmrs/data:/usr/local/tomcat/.OpenMRS
       - $docker_containers_shared_dir/openmrs/data/hl7:/usr/local/tomcat/.OpenMRS/hl7
-      - ./openmrs-common/modules/legacyui-1.8.2.omod:/usr/local/tomcat/.OpenMRS/modules/legacyui.omod
-      - ./openmrs-common/modules/owa-1.12.0.omod:/usr/local/tomcat/.OpenMRS/modules/owa.omod
-      - ./openmrs-common/modules/webservices.rest-2.36.0.omod:/usr/local/tomcat/.OpenMRS/modules/webservices.rest.omod
-      - ./openmrs-common/modules/eptsreports.omod:/usr/local/tomcat/.OpenMRS/modules/eptsreports.omod
-      - ./openmrs-common/modules/serialization.xstream-0.2.14.omod:/usr/local/tomcat/.OpenMRS/modules/serialization.xstream.omod
-      - ./openmrs-common/modules/calculation-1.2.1.omod:/usr/local/tomcat/.OpenMRS/modules/calculation.omod
-      - ./openmrs-common/modules/htmlwidgets-1.10.0.omod:/usr/local/tomcat/.OpenMRS/modules/htmlwidgets.omod
-      - ./openmrs-common/modules/reporting-1.21.0.omod:/usr/local/tomcat/.OpenMRS/modules/reporting.omod       
-      - ./openmrs-central/modules/debezium-1.0.0-SNAPSHOT.omod:/usr/local/tomcat/.OpenMRS/modules/debezium.omod
-      - ./openmrs-central/modules/mpi-1.0.0-SNAPSHOT.omod:/usr/local/tomcat/.OpenMRS/modules/mpi.omod
+      - ./openmrs-central/modules/debezium-1.0.1.omod:/usr/local/tomcat/.OpenMRS/modules/debezium.omod
       - ./openmrs-central/modules/formdataexport-1.0.0.omod:/usr/local/tomcat/.OpenMRS/modules/formdataexport.omod
       - ./openmrs-central/modules/htmlformentry-3.13.1.omod:/usr/local/tomcat/.OpenMRS/modules/htmlformentry.omod
+      - ./openmrs-central/modules/mpi-1.0.1.omod:/usr/local/tomcat/.OpenMRS/modules/mpi.omod      
+      - ./openmrs-common/modules/calculation-1.3.0.omod:/usr/local/tomcat/.OpenMRS/modules/calculation.omod
+      - ./openmrs-common/modules/eptsreports-3.18.0.omod:/usr/local/tomcat/.OpenMRS/modules/eptsreports.omod
+      - ./openmrs-common/modules/clinicalsummary-1.0-RELEASE.omod:/usr/local/tomcat/.OpenMRS/modules/eptsreports.omod
+      - ./openmrs-common/modules/htmlwidgets-1.11.0.omod:/usr/local/tomcat/.OpenMRS/modules/htmlwidgets.omod
+      - ./openmrs-common/modules/legacyui-1.16.0.omod:/usr/local/tomcat/.OpenMRS/modules/legacyui.omod
+      - ./openmrs-common/modules/owa-1.14.0.omod:/usr/local/tomcat/.OpenMRS/modules/owa.omod
+      - ./openmrs-common/modules/reporting-1.25.0.omod:/usr/local/tomcat/.OpenMRS/modules/reporting.omod
+      - ./openmrs-common/modules/serialization.xstream-0.2.16.omod:/usr/local/tomcat/.OpenMRS/modules/serialization.xstream.omod
+      - ./openmrs-common/modules/webservices.rest-2.41.0.omod:/usr/local/tomcat/.OpenMRS/modules/webservices.rest.omod      
     ports:
       - "$port_openmrs_central:8080"
     entrypoint: [ "sh", "/usr/local/tomcat/scripts/run.sh" ]
@@ -175,10 +108,6 @@ services:
 
 
 volumes:
-  opencrDbData:
-    external: true
-  esData:
-    external: true
   openmrsDbData:
     external: true 
   dbSyncCentralDbData: 
