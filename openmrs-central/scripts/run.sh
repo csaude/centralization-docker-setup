@@ -9,9 +9,14 @@ apt-get install -y vim
 apt-get install -y nano 
 apt-get install -y expect
 
-if test ! -f "/usr/local/tomcat/webapps/openmrs.war"; then
-  curl -L https://downloads.sourceforge.net/project/openmrs/releases/OpenMRS_Platform_2.6.9/openmrs.war -o /usr/local/tomcat/webapps/openmrs.war
-fi
+#rm /usr/local/tomcat/webapps/openmrs.war
+#rm -fr /usr/local/tomcat/webapps/openmrs
+
+#exit
+
+#if test ! -f "/usr/local/tomcat/webapps/openmrs.war"; then
+#  curl -L https://downloads.sourceforge.net/project/openmrs/releases/OpenMRS_Platform_2.6.9/openmrs.war -o /usr/local/tomcat/webapps/openmrs.war
+#fi
 
 
 if [ ! -f "$INSTALL_FINISHED_REPORT_FILE" ]; then
@@ -21,4 +26,4 @@ if [ ! -f "$INSTALL_FINISHED_REPORT_FILE" ]; then
   	echo "Installation finished at $timestamp" >> $INSTALL_FINISHED_REPORT_FILE
 fi
 
-./bin/catalina.sh run
+$HOME_DIR/bin/catalina.sh run
