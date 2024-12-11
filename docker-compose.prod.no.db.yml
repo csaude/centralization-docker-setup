@@ -2,7 +2,7 @@ version: "3.3"
 
 services:
   artemis:
-    image: cnocorch/activemq-artemis
+    image: apache/activemq-artemis:2.38.0
     container_name: artemis
     ports:
       - "$port_artemis_brocker:61616"
