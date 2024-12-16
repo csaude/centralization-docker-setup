@@ -32,7 +32,7 @@ services:
     restart: unless-stopped
 
   artemis:
-    image: cnocorch/activemq-artemis
+    image: apache/activemq-artemis:2.38.0
     container_name: artemis
     ports:
       - "$port_artemis_brocker:61616"
@@ -40,14 +40,14 @@ services:
       - "$port_artemis_console:8161"
       - "$port_artemis_jmx_prometheus:9080"
     volumes:
-      - $docker_containers_shared_dir/conf/artemis/artemis-roles.properties:/var/lib/artemis/etc/artemis-roles.properties
-      - $docker_containers_shared_dir/conf/artemis/artemis-users.properties:/var/lib/artemis/etc/artemis-users.properties
-      - $docker_containers_shared_dir/conf/artemis/broker.xml:/var/lib/artemis/etc/broker.xml
-      - $docker_containers_shared_dir/conf/artemis/certificates:/var/lib/artemis/etc/ssl
-      - ./artemis/monitoring/jmx_prometheus_config.yml:/var/lib/artemis/etc/jmx_prometheus_config.yml
-      - ./artemis/monitoring/jmx_prometheus_javaagent-0.17.2.jar:/var/lib/artemis/etc/jmx_prometheus_javaagent.jar
-      - ./artemis/artemis:/var/lib/artemis/bin/artemis
-      - artemisData:/var/lib/artemis/data/
+      - $docker_containers_shared_dir/conf/artemis/artemis-roles.properties:/var/lib/artemis-instance/etc-override/artemis-roles.properties
+      - $docker_containers_shared_dir/conf/artemis/artemis-users.properties:/var/lib/artemis-instance/etc-override/artemis-users.properties
+      - $docker_containers_shared_dir/conf/artemis/broker.xml:/var/lib/artemis-instance/etc-override/broker.xml
+      - $docker_containers_shared_dir/conf/artemis/certificates:/var/lib/artemis-instance/etc/ssl
+      - ./artemis/monitoring/jmx_prometheus_config.yml:/var/lib/artemis-instance/etc-override/jmx_prometheus_config.yml
+      - ./artemis/monitoring/jmx_prometheus_javaagent-0.17.2.jar:/var/lib/artemis-instance/etc-override/jmx_prometheus_javaagent.jar
+      - ./artemis/artemis:/var/lib/artemis-instance/bin/artemis
+      - artemisData:/var/lib/artemis-instance/
       - /etc/localtime:/etc/localtime
     restart: unless-stopped
     
