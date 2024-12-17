@@ -34,18 +34,18 @@ services:
   artemis:
     image: apache/activemq-artemis:2.38.0
     container_name: artemis
+    user: "artemis:artemis"
     ports:
       - "$port_artemis_brocker:61616"
       - "$port_artemis_brocker_ssl:61617"
       - "$port_artemis_console:8161"
       - "$port_artemis_jmx_prometheus:9080"
     volumes:
-      - $docker_containers_shared_dir/conf/artemis/artemis-roles.properties:/var/lib/artemis-instance/etc-override/artemis-roles.properties
-      - $docker_containers_shared_dir/conf/artemis/artemis-users.properties:/var/lib/artemis-instance/etc-override/artemis-users.properties
-      - $docker_containers_shared_dir/conf/artemis/broker.xml:/var/lib/artemis-instance/etc-override/broker.xml
+      - $docker_containers_shared_dir/conf/artemis/etc/:/var/lib/artemis-instance/etc/
       - $docker_containers_shared_dir/conf/artemis/certificates:/var/lib/artemis-instance/etc/ssl
-      - ./artemis/monitoring/jmx_prometheus_config.yml:/var/lib/artemis-instance/etc-override/jmx_prometheus_config.yml
-      - ./artemis/monitoring/jmx_prometheus_javaagent-0.17.2.jar:/var/lib/artemis-instance/etc-override/jmx_prometheus_javaagent.jar
+      - ./artemis/monitoring/jmx_prometheus_config.yml:/var/lib/artemis-instance/lib/jmx_prometheus_config.yml
+      - ./artemis/monitoring/jmx_prometheus_javaagent-0.17.2.jar:/var/lib/artemis-instance/lib/jmx_prometheus_javaagent.jar
+      - ./artemis/monitoring/jboss-logmanager-2.1.19.Final.jar:/var/lib/artemis-instance/lib/jboss-logmanager-2.1.19.Final.jar
       - ./artemis/artemis:/var/lib/artemis-instance/bin/artemis
       - artemisData:/var/lib/artemis-instance/
       - /etc/localtime:/etc/localtime
