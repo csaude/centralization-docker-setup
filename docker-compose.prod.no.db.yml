@@ -8,6 +8,7 @@ services:
     ports:
       - "$port_artemis_brocker:61616"
       - "$port_artemis_brocker_ssl:61617"
+      - "$new_port_artemis_brocker_ssl:61618"
       - "$port_artemis_console:8161"
       - "$port_artemis_jmx_prometheus:9080"
     volumes:
