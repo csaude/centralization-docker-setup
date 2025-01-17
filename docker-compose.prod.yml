@@ -41,7 +41,7 @@ services:
       - "$port_artemis_console:8161"
       - "$port_artemis_jmx_prometheus:9080"
     volumes:
-      - $docker_containers_shared_dir/conf/artemis/etc/:/var/lib/artemis-instance/etc/
+      - ./artemis/etc/:/var/lib/artemis-instance/etc/
       - $docker_containers_shared_dir/conf/artemis/certificates:/var/lib/artemis-instance/etc/ssl
       - ./artemis/monitoring/jmx_prometheus_config.yml:/var/lib/artemis-instance/lib/jmx_prometheus_config.yml
       - ./artemis/monitoring/jmx_prometheus_javaagent-0.17.2.jar:/var/lib/artemis-instance/lib/jmx_prometheus_javaagent.jar
