@@ -41,12 +41,25 @@ services:
       - "$port_artemis_console:8161"
       - "$port_artemis_jmx_prometheus:9080"
     volumes:
-      - ./artemis/etc/:/var/lib/artemis-instance/etc/
-      - $docker_containers_shared_dir/conf/artemis/certificates:/var/lib/artemis-instance/etc/ssl
+      - ./artemis/etc/artemis.profile:/var/lib/artemis-instance/etc/artemis.profile
+      - ./artemis/etc/bootstrap.xml:/var/lib/artemis-instance/etc/bootstrap.xml
+      - ./artemis/etc/jmx_prometheus_config.yml:/var/lib/artemis-instance/etc/jmx_prometheus_config.yml
+      - ./artemis/etc/lib/:/var/lib/artemis-instance/etc/lib
+      - ./artemis/etc/log4j2-utility.properties:/var/lib/artemis-instance/etc/log4j2-utility.properties
+      - ./artemis/etc/login.config:/var/lib/artemis-instance/etc/login.config
+      - ./artemis/etc/artemis-utility.profile:/var/lib/artemis-instance/etc/artemis-utility.profile
+      - ./artemis/etc/broker.xml:/var/lib/artemis-instance/etc/broker.xml
+      - ./artemis/etc/jolokia-access.xml:/var/lib/artemis-instance/etc/jolokia-access.xml
+      - ./artemis/etc/log4j2.properties:/var/lib/artemis-instance/etc/log4j2.properties
+      - ./artemis/etc/logging.properties:/var/lib/artemis-instance/etc/logging.properties
+      - ./artemis/etc/management.xml:/var/lib/artemis-instance/etc/management.xml
       - ./artemis/monitoring/jmx_prometheus_config.yml:/var/lib/artemis-instance/lib/jmx_prometheus_config.yml
       - ./artemis/monitoring/jmx_prometheus_javaagent-0.17.2.jar:/var/lib/artemis-instance/lib/jmx_prometheus_javaagent.jar
       - ./artemis/monitoring/jboss-logmanager-2.1.19.Final.jar:/var/lib/artemis-instance/lib/jboss-logmanager-2.1.19.Final.jar
       - ./artemis/artemis:/var/lib/artemis-instance/bin/artemis
+      - $docker_containers_shared_dir/conf/artemis/certificates:/var/lib/artemis-instance/etc/ssl
+      - $docker_containers_shared_dir/conf/artemis/artemis-users.properties:/var/lib/artemis-instance/etc/artemis-users.properties
+      - $docker_containers_shared_dir/conf/artemis/artemis-roles.properties:/var/lib/artemis-instance/etc/artemis-roles.properties
       - artemisData:/var/lib/artemis-instance/
       - /etc/localtime:/etc/localtime
     restart: unless-stopped
