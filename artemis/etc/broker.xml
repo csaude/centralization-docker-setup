@@ -154,6 +154,11 @@ under the License.
         <auto-create-jms-topics>true</auto-create-jms-topics>
 	<max-delivery-attempts>-1</max-delivery-attempts>
       </address-setting>
+      <address-setting match="#">
+	  <auto-delete-queues>false</auto-delete-queues>
+	  <auto-delete-addresses>false</auto-delete-addresses>
+	  <auto-delete-created-queues>false</auto-delete-created-queues>
+      </address-setting>
     </address-settings>
     <addresses>
       <address name="DLQ">
