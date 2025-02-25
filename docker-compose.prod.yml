@@ -38,12 +38,12 @@ services:
     ports:
       - "$port_artemis_broker:61616"
       - "$port_artemis_broker_ssl:61617"
+      - "$port_artemis_broker_ssl_02:61618"
       - "$port_artemis_console:8161"
       - "$port_artemis_jmx_prometheus:9080"
     volumes:
       - ./artemis/etc/artemis.profile:/var/lib/artemis-instance/etc/artemis.profile
       - ./artemis/etc/bootstrap.xml:/var/lib/artemis-instance/etc/bootstrap.xml
-      - ./artemis/etc/jmx_prometheus_config.yml:/var/lib/artemis-instance/etc/jmx_prometheus_config.yml
       - ./artemis/etc/lib/:/var/lib/artemis-instance/etc/lib
       - ./artemis/etc/log4j2-utility.properties:/var/lib/artemis-instance/etc/log4j2-utility.properties
       - ./artemis/etc/login.config:/var/lib/artemis-instance/etc/login.config
