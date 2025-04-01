@@ -1,13 +1,49 @@
 #!/bin/sh
-
-HOME_DIR="/usr/local/tomcat"
-INSTALL_FINISHED_REPORT_FILE="$HOME_DIR/install_finished_report_file"
-
 apt-get update
 apt-get install -y curl
 apt-get install -y vim 
 apt-get install -y nano 
 apt-get install -y expect
+
+HOME_DIR="/usr/local/tomcat"
+INSTALL_FINISHED_REPORT_FILE="$HOME_DIR/install_finished_report_file"
+
+RELEASE_VERSION_TAG="v2.6.11"
+RELEASE_NAME="openmrs-platform-release-$RELEASE_VERSION_TAG"
+RELEASE_DATE="2025-03-20 12:00:00"
+RELEASE_DESC="OpenMrs war file v2.6.11"
+OPENMRS_PLATFORM_WAR_FILE_RELEASE_URL="https://github.com/csaude/openmrs-docker-2.6.11/releases/download/$RELEASE_VERSION_TAG/openmrs.war"
+
+OPENMRS_DIR="$HOME_DIR/.OpenMRS"
+RELEASES_PACKAGES_DIR="$OPENMRS_DIR/releases"
+SCRIPTS_DIR="$HOME_DIR/scripts"
+
+# Check if the releases directory does not exist
+if [ ! -d "$RELEASES_PACKAGES_DIR" ]; then
+    # releases directory does not exist, so create it
+    mkdir -p "$RELEASES_PACKAGES_DIR"
+    echo "releases directory $RELEASES_PACKAGES_DIR created."
+else
+    echo "releases directory $RELEASES_PACKAGES_DIR already exists."
+fi
+
+# Downloading release packages
+echo "Verifying $RELEASE_NAME packages download status"
+$SCRIPTS_DIR/download_release.sh "$RELEASES_PACKAGES_DIR" "$RELEASE_NAME" "$OPENMRS_PLATFORM_WAR_FILE_RELEASE_URL"
+
+CURRENT_RELEASES_PACKAGES_DIR="$RELEASES_PACKAGES_DIR/$RELEASE_NAME"
+
+RELEASE_PACKAGES_DOWNLOAD_COMPLETED="$CURRENT_RELEASES_PACKAGES_DIR/download_completed"
+
+if [ ! -f "$RELEASE_PACKAGES_DOWNLOAD_COMPLETED" ]; then
+	echo "Error trying to download release packages: $RELEASE_NAME. See previous messages."
+        echo "Installation process failed" 
+        exit 1
+fi
+
+WAR_PACKAGE_RELEASE_FILE_NAME=$(getFileName "$OPENMRS_PLATFORM_WAR_FILE_RELEASE_URL")
+echo "Copying openmrs war file platform"
+cp "$CURRENT_RELEASES_PACKAGES_DIR/$WAR_PACKAGE_RELEASE_FILE_NAME" "$HOME_DIR/webapps/openmrs.war"
 
 #rm /usr/local/tomcat/webapps/openmrs.war
 #rm -fr /usr/local/tomcat/webapps/openmrs
