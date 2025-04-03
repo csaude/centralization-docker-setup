@@ -47,7 +47,6 @@ if [ ! -f "$RELEASE_PACKAGES_DOWNLOAD_COMPLETED" ]; then
 	WAR_PACKAGE_RELEASE_FILE_NAME=$(getFileName "$OPENMRS_PLATFORM_WAR_FILE_RELEASE_URL")
 	echo "Copying openmrs war file platform"
 	cp "$CURRENT_RELEASES_PACKAGES_DIR/$WAR_PACKAGE_RELEASE_FILE_NAME" "$HOME_DIR/webapps/openmrs.war"
-	$HOME_DIR/bin/catalina.sh run
 	
 	else echo "No new version available."
 fi
@@ -63,3 +62,4 @@ if [ ! -f "$INSTALL_FINISHED_REPORT_FILE" ]; then
 	timestamp=`date +%Y-%m-%d_%H-%M-%S`
   	echo "Installation finished at $timestamp" >> $INSTALL_FINISHED_REPORT_FILE
 fi
+$HOME_DIR/bin/catalina.sh run
