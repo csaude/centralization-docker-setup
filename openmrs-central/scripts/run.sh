@@ -17,6 +17,8 @@ OPENMRS_PLATFORM_WAR_FILE_RELEASE_URL="https://github.com/csaude/openmrs-docker-
 OPENMRS_DIR="$HOME_DIR/.OpenMRS"
 RELEASES_PACKAGES_DIR="$OPENMRS_DIR/releases"
 SCRIPTS_DIR="$HOME_DIR/scripts"
+CURRENT_RELEASES_PACKAGES_DIR="$RELEASES_PACKAGES_DIR/$RELEASE_NAME"
+RELEASE_PACKAGES_DOWNLOAD_COMPLETED="$CURRENT_RELEASES_PACKAGES_DIR/download_completed"
 
 # Check if the releases directory does not exist
 if [ ! -d "$RELEASES_PACKAGES_DIR" ]; then
@@ -27,33 +29,33 @@ else
     echo "releases directory $RELEASES_PACKAGES_DIR already exists."
 fi
 
-# Downloading release packages
-echo "Verifying $RELEASE_NAME packages download status"
-$SCRIPTS_DIR/download_release.sh "$RELEASES_PACKAGES_DIR" "$RELEASE_NAME" "$OPENMRS_PLATFORM_WAR_FILE_RELEASE_URL"
-
-CURRENT_RELEASES_PACKAGES_DIR="$RELEASES_PACKAGES_DIR/$RELEASE_NAME"
-
-RELEASE_PACKAGES_DOWNLOAD_COMPLETED="$CURRENT_RELEASES_PACKAGES_DIR/download_completed"
-
+# Check if the download is completed
 if [ ! -f "$RELEASE_PACKAGES_DOWNLOAD_COMPLETED" ]; then
-	echo "Error trying to download release packages: $RELEASE_NAME. See previous messages."
-        echo "Installation process failed" 
-        exit 1
+	rm /usr/local/tomcat/webapps/openmrs.war
+	rm -fr /usr/local/tomcat/webapps/openmrs
+	
+	# Downloading new release packages
+	echo "Verifying $RELEASE_NAME packages download status"
+	$SCRIPTS_DIR/download_release.sh "$RELEASES_PACKAGES_DIR" "$RELEASE_NAME" "$OPENMRS_PLATFORM_WAR_FILE_RELEASE_URL"
+
+	if [ ! -f "$RELEASE_PACKAGES_DOWNLOAD_COMPLETED" ]; then
+		echo "Error trying to download release packages: $RELEASE_NAME. See previous messages."
+			echo "Installation process failed" 
+			exit 1
+	fi
+
+	WAR_PACKAGE_RELEASE_FILE_NAME=$(getFileName "$OPENMRS_PLATFORM_WAR_FILE_RELEASE_URL")
+	echo "Copying openmrs war file platform"
+	cp "$CURRENT_RELEASES_PACKAGES_DIR/$WAR_PACKAGE_RELEASE_FILE_NAME" "$HOME_DIR/webapps/openmrs.war"
+	$HOME_DIR/bin/catalina.sh run
+	
+	else echo "No new version available."
 fi
-
-WAR_PACKAGE_RELEASE_FILE_NAME=$(getFileName "$OPENMRS_PLATFORM_WAR_FILE_RELEASE_URL")
-echo "Copying openmrs war file platform"
-cp "$CURRENT_RELEASES_PACKAGES_DIR/$WAR_PACKAGE_RELEASE_FILE_NAME" "$HOME_DIR/webapps/openmrs.war"
-
-#rm /usr/local/tomcat/webapps/openmrs.war
-#rm -fr /usr/local/tomcat/webapps/openmrs
-
 #exit
 
 #if test ! -f "/usr/local/tomcat/webapps/openmrs.war"; then
 #  curl -L https://downloads.sourceforge.net/project/openmrs/releases/OpenMRS_Platform_2.6.9/openmrs.war -o /usr/local/tomcat/webapps/openmrs.war
 #fi
-
 
 if [ ! -f "$INSTALL_FINISHED_REPORT_FILE" ]; then
 	$HOME_DIR/scripts/init.sh
@@ -61,5 +63,3 @@ if [ ! -f "$INSTALL_FINISHED_REPORT_FILE" ]; then
 	timestamp=`date +%Y-%m-%d_%H-%M-%S`
   	echo "Installation finished at $timestamp" >> $INSTALL_FINISHED_REPORT_FILE
 fi
-
-$HOME_DIR/bin/catalina.sh run
