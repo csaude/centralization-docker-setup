@@ -45,8 +45,8 @@ if [ ! -f "$RELEASE_PACKAGES_DOWNLOAD_COMPLETED" ]; then
 	fi
 
 	WAR_PACKAGE_RELEASE_FILE_NAME=$(getFileName "$OPENMRS_PLATFORM_WAR_FILE_RELEASE_URL")
-	echo "Copying openmrs war file platform"
-	cp "$CURRENT_RELEASES_PACKAGES_DIR/$WAR_PACKAGE_RELEASE_FILE_NAME" "$HOME_DIR/webapps/openmrs.war"
+	echo "Copying openmrs war file platform $CURRENT_RELEASES_PACKAGES_DIR/$WAR_PACKAGE_RELEASE_FILE_NAME"
+	cp "$CURRENT_RELEASES_PACKAGES_DIR/$WAR_PACKAGE_RELEASE_FILE_NAME/openmrs.war" "$HOME_DIR/webapps/openmrs.war"
 	
 	else echo "No new version available."
 fi
