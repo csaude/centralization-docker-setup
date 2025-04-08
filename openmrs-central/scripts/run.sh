@@ -44,17 +44,11 @@ if [ ! -f "$RELEASE_PACKAGES_DOWNLOAD_COMPLETED" ]; then
 			exit 1
 	fi
 
-	WAR_PACKAGE_RELEASE_FILE_NAME=$(getFileName "$OPENMRS_PLATFORM_WAR_FILE_RELEASE_URL")
 	echo "Copying openmrs war file platform $CURRENT_RELEASES_PACKAGES_DIR/$WAR_PACKAGE_RELEASE_FILE_NAME"
 	cp "$CURRENT_RELEASES_PACKAGES_DIR/$WAR_PACKAGE_RELEASE_FILE_NAME/openmrs.war" "$HOME_DIR/webapps/openmrs.war"
 	
 	else echo "No new version available."
 fi
-#exit
-
-#if test ! -f "/usr/local/tomcat/webapps/openmrs.war"; then
-#  curl -L https://downloads.sourceforge.net/project/openmrs/releases/OpenMRS_Platform_2.6.9/openmrs.war -o /usr/local/tomcat/webapps/openmrs.war
-#fi
 
 if [ ! -f "$INSTALL_FINISHED_REPORT_FILE" ]; then
 	$HOME_DIR/scripts/init.sh
