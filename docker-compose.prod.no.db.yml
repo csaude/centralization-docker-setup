@@ -3,8 +3,8 @@ version: "3.3"
 services:
   artemis:
     image: apache/activemq-artemis:2.38.0
-    user: "artemis:artemis"
     container_name: artemis
+    user: "artemis:artemis"
     ports:
       - "$port_artemis_broker:61616"
       - "$port_artemis_broker_ssl:61617"
@@ -12,12 +12,24 @@ services:
       - "$port_artemis_console:8161"
       - "$port_artemis_jmx_prometheus:9080"
     volumes:
-      - ./artemis/etc/:/var/lib/artemis-instance/etc/
-      - $docker_containers_shared_dir/conf/artemis/certificates:/var/lib/artemis-instance/etc/ssl
+      - ./artemis/etc/artemis.profile:/var/lib/artemis-instance/etc/artemis.profile
+      - ./artemis/etc/bootstrap.xml:/var/lib/artemis-instance/etc/bootstrap.xml
+      - ./artemis/etc/lib/:/var/lib/artemis-instance/etc/lib
+      - ./artemis/etc/log4j2-utility.properties:/var/lib/artemis-instance/etc/log4j2-utility.properties
+      - ./artemis/etc/login.config:/var/lib/artemis-instance/etc/login.config
+      - ./artemis/etc/artemis-utility.profile:/var/lib/artemis-instance/etc/artemis-utility.profile
+      - ./artemis/etc/broker.xml:/var/lib/artemis-instance/etc/broker.xml
+      - ./artemis/etc/jolokia-access.xml:/var/lib/artemis-instance/etc/jolokia-access.xml
+      - ./artemis/etc/log4j2.properties:/var/lib/artemis-instance/etc/log4j2.properties
+      - ./artemis/etc/logging.properties:/var/lib/artemis-instance/etc/logging.properties
+      - ./artemis/etc/management.xml:/var/lib/artemis-instance/etc/management.xml
       - ./artemis/monitoring/jmx_prometheus_config.yml:/var/lib/artemis-instance/lib/jmx_prometheus_config.yml
       - ./artemis/monitoring/jmx_prometheus_javaagent-0.17.2.jar:/var/lib/artemis-instance/lib/jmx_prometheus_javaagent.jar
       - ./artemis/monitoring/jboss-logmanager-2.1.19.Final.jar:/var/lib/artemis-instance/lib/jboss-logmanager-2.1.19.Final.jar
       - ./artemis/artemis:/var/lib/artemis-instance/bin/artemis
+      - $docker_containers_shared_dir/conf/artemis/certificates:/var/lib/artemis-instance/etc/ssl
+      - $docker_containers_shared_dir/conf/artemis/artemis-users.properties:/var/lib/artemis-instance/etc/artemis-users.properties
+      - $docker_containers_shared_dir/conf/artemis/artemis-roles.properties:/var/lib/artemis-instance/etc/artemis-roles.properties
       - artemisData:/var/lib/artemis-instance/
       - /etc/localtime:/etc/localtime
     restart: unless-stopped
@@ -44,14 +56,14 @@ services:
       - ./openmrs-central/modules/htmlformentry-3.13.1.omod:/usr/local/tomcat/.OpenMRS/modules/htmlformentry.omod
       - ./openmrs-central/modules/mpi-1.0.1.omod:/usr/local/tomcat/.OpenMRS/modules/mpi.omod      
       - ./openmrs-common/modules/calculation-1.3.0.omod:/usr/local/tomcat/.OpenMRS/modules/calculation.omod
-      - ./openmrs-common/modules/eptsreports-3.18.0.omod:/usr/local/tomcat/.OpenMRS/modules/eptsreports.omod
+      - ./openmrs-common/modules/eptsreports-4.1.0.omod:/usr/local/tomcat/.OpenMRS/modules/eptsreports.omod
       - ./openmrs-common/modules/clinicalsummary-1.0-RELEASE.omod:/usr/local/tomcat/.OpenMRS/modules/clinicalsummary.omod
       - ./openmrs-common/modules/htmlwidgets-1.11.0.omod:/usr/local/tomcat/.OpenMRS/modules/htmlwidgets.omod
-      - ./openmrs-common/modules/legacyui-1.16.0.omod:/usr/local/tomcat/.OpenMRS/modules/legacyui.omod
-      - ./openmrs-common/modules/owa-1.14.0.omod:/usr/local/tomcat/.OpenMRS/modules/owa.omod
+      - ./openmrs-common/modules/legacyui-1.21.0.omod:/usr/local/tomcat/.OpenMRS/modules/legacyui.omod
+      - ./openmrs-common/modules/owa-1.15.0.omod:/usr/local/tomcat/.OpenMRS/modules/owa.omod
       - ./openmrs-common/modules/reporting-1.25.0.omod:/usr/local/tomcat/.OpenMRS/modules/reporting.omod
       - ./openmrs-common/modules/serialization.xstream-0.2.16.omod:/usr/local/tomcat/.OpenMRS/modules/serialization.xstream.omod
-      - ./openmrs-common/modules/webservices.rest-2.41.0.omod:/usr/local/tomcat/.OpenMRS/modules/webservices.rest.omod      
+      - ./openmrs-common/modules/webservices.rest-2.46.0.omod:/usr/local/tomcat/.OpenMRS/modules/webservices.rest.omod      
     working_dir: /usr/local/tomcat
     ports:
       - "$port_openmrs_central:8080"
