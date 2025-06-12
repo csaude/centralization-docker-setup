@@ -67,6 +67,7 @@ services:
     working_dir: /usr/local/tomcat
     ports:
       - "$port_openmrs_central:8080"
+      - "$port_openmrs_remote_debug:8000"
     entrypoint: [ "sh", "/usr/local/tomcat/scripts/run.sh" ]
     restart: unless-stopped
 
@@ -86,7 +87,7 @@ services:
       - artemis
     ports:
       - "$port_dbsync_console:8081"
-      - "$port_remote_debug:8000"
+      - "$port_dbsync_remote_debug:8000"
     volumes:
       - $docker_containers_shared_dir/conf/eip/dbsync-users.properties:/home/eip/dbsync-users.properties
       - $docker_containers_shared_dir:/home/eip/shared

@@ -11,5 +11,6 @@ export port_artemis_broker=61616
 export port_artemis_broker_ssl=61617
 export port_artemis_broker_ssl_02=61618
 export port_dbsync_console=8081
-export port_remote_debug=8000
+export port_openmrs_remote_debug=8001
+export port_dbsync_remote_debug=8000
 export port_artemis_jmx_prometheus=9080
