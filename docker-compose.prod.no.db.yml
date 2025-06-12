@@ -86,6 +86,7 @@ services:
       - artemis
     ports:
       - "$port_dbsync_console:8081"
+      - "$port_remote_debug:8000"
     volumes:
       - $docker_containers_shared_dir/conf/eip/dbsync-users.properties:/home/eip/dbsync-users.properties
       - $docker_containers_shared_dir:/home/eip/shared
