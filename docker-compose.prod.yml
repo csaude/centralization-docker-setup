@@ -95,7 +95,7 @@ services:
     working_dir: /usr/local/tomcat
     ports:
       - "$port_openmrs_central:8080"
-      - "$port_openmrs_remote_debug:8080"
+      - "$port_openmrs_remote_debug:8000"
     entrypoint: [ "sh", "/usr/local/tomcat/scripts/run.sh" ]
     restart: unless-stopped
 
