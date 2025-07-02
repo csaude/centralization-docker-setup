@@ -10,4 +10,6 @@ echo -n "NOTIFICATIONS MANAGER STARTED IN BACKGROUND"
 
 echo Starting openmrs eip app...
 
+#java -jar -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000 -Dspring.profiles.active=receiver -Duser.timezone="Africa/Maputo" openmrs-eip-app.jar
+
 java -jar -Dspring.profiles.active=receiver -Duser.timezone="Africa/Maputo" openmrs-eip-app.jar
