@@ -12,6 +12,6 @@ export RELEASE_NAME="EIP-Release-$RELEASE_VERSION_TAG"
 export RELEASE_DATE="2025-05-20 12:00:00"
 export RELEASE_DESC="DBSync v1.9x, upgrade of OpenMRS to a new release and accommodation with DBSync"
 
-export OPENMRS_EIP_APP_RELEASE_URL="https://github.com/csaude/openmrs-eip-docker/releases/download/${RELEASE_VERSION_TAG}/openmrs-eip-app-1.9.0.jar"
+export OPENMRS_EIP_APP_RELEASE_URL="https://github.com/csaude/openmrs-eip-docker/releases/download/${RELEASE_VERSION_TAG}/openmrs-eip-app-1.9.1.jar"
 export EPTS_ETL_API_RELEASE_URL="https://github.com/csaude/openmrs-eip-docker/releases/download/${RELEASE_VERSION_TAG}/epts-etl-api-1.0.jar"
 export CENTRALIZATION_FEATURES_MANAGER_RELEASE_URL="https://github.com/csaude/openmrs-eip-docker/releases/download/${RELEASE_VERSION_TAG}/centralization-features-manager-1.0.jar"
